@@ -1,0 +1,24 @@
+---
+title: "SDS230_FinalProject"
+author: "Tejita Agarwal, Lelan Hu, Franklin She"
+date: "5/5/2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Introduction**
+
+**Data**
+
+**Data Cleaning Process**
+
+**Descriptive Plots**
+
+**Summary Information**
+
+**Analysis**
+
+**Conclusions**
