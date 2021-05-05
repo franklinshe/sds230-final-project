@@ -10,15 +10,26 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 **Introduction**
+Background and motivation, not more than a short paragraph
 
 **Data**
+Make a LIST of all variables you actually use – describe units, anything I should know. Ignore variables you don’t discuss.
 
 **Data Cleaning Process**
+Describe the cleaning process you used on your data. Talk about what issues you encountered.
+Demonstrate use of find/replace, data cleaning, dealing with missing values, text character replacement, matching. It’s ok if your data didn’t require much of this.
 
 **Descriptive Plots**
+Plots should be clearly labeled, well formatted, and display an aesthetic sense.
+Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
 
 **Summary Information**
 
 **Analysis**
+Basic tests - t-test, correlation, AND ability to create bootstrap confidence interval for either a t-test or a correlation.
+Permutation Test – include at least one.
+Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
+AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 
 **Conclusions**
+a short paragraph
