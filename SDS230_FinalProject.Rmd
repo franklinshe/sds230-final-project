@@ -19,6 +19,13 @@ Make a LIST of all variables you actually use – describe units, anything I sho
 Describe the cleaning process you used on your data. Talk about what issues you encountered.
 Demonstrate use of find/replace, data cleaning, dealing with missing values, text character replacement, matching. It’s ok if your data didn’t require much of this.
 
+```{r}
+# test
+
+# asdfasdf
+```
+
+
 **Descriptive Plots**
 Plots should be clearly labeled, well formatted, and display an aesthetic sense.
 Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
