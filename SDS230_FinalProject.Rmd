@@ -20,20 +20,14 @@ Describe the cleaning process you used on your data. Talk about what issues you 
 Demonstrate use of find/replace, data cleaning, dealing with missing values, text character replacement, matching. It’s ok if your data didn’t require much of this.
 
 ```{r}
-d1=read.table("student-mat.csv",sep=";",header=TRUE)
-d2=read.table("student-por.csv",sep=";",header=TRUE)
+d1=read.csv("student-mat.csv",header=TRUE)
+d2=read.csv("student-por.csv",header=TRUE)
 
 d3=merge(d1,d2,by=c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet"))
 
 print(nrow(d3))
 
-# test
-
-
-
 # 382 students
-# asdfasdf
-# tejita is not the best
 ```
 
 **Descriptive Plots**
