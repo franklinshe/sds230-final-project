@@ -23,12 +23,14 @@ Demonstrate use of find/replace, data cleaning, dealing with missing values, tex
 # test
 
 # asdfasdf
+# wow
 ```
 
 
 **Descriptive Plots**
 Plots should be clearly labeled, well formatted, and display an aesthetic sense.
 Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
+
 
 **Summary Information**
 
