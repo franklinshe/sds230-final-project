@@ -20,10 +20,12 @@ Describe the cleaning process you used on your data. Talk about what issues you 
 Demonstrate use of find/replace, data cleaning, dealing with missing values, text character replacement, matching. It’s ok if your data didn’t require much of this.
 
 ```{r}
-# test
+d1=read.csv("student-mat.csv",header=TRUE)
+d2=read.csv("student-por.csv",header=TRUE)
+d3=merge(d1,d2,by=c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet"))
 
-# asdfasdf
-# wow
+print(nrow(d3))
+
 ```
 
 
