@@ -44,13 +44,14 @@ selected_data <- all_data[, c("school", "sex", "age", "studytime", "higher", "Da
 # rename G3 to grade
 selected_data <- rename(selected_data, c("G3"="grade"))
 
-# remove observations where grade is 0 or 1
-selected_data <- selected_data[selected_data$grade > 1,]
+# remove observations where grade is 0
+selected_data <- selected_data[selected_data$grade != 0,]
 
 nrow(selected_data)
 names(selected_data)
 head(selected_data)
 
+attach(selected_data)
 # i think the data already comes pretty clean tbh... 
 ```
 
@@ -59,8 +60,10 @@ head(selected_data)
 Plots should be clearly labeled, well formatted, and display an aesthetic sense.
 Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
 ```{r}
-hist(selected_data$grade)
+hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = 3)
 # grade is pretty much the only variable that is normally distributed.. is this an issue?
+boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade (0 - 20)")
+boxplot(grade ~ sex, main = "Boxplot of Grades by Gender", ylab = "Grade (0 - 20)")
 ```
 
 
