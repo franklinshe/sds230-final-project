@@ -21,16 +21,16 @@ Background and motivation, not more than a short paragraph
 **Data**
 *The data used in this analysis are:
 
-1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
-2. sex - student's sex (binary: 'F' - female or 'M' - male)
-3. age - student's age (numeric: from 15 to 22)
-4. studytime - weekly study time (numeric: 1 - 10 hours)
-5. higher - wants to take higher education (binary: yes or no)
-6. Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high)
-7. Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)
-8. health - current health status (numeric: from 1 - very bad to 5 - very good)
-9. absences - number of school absences (numeric: from 0 to 93)
-10. grade - final grade (numeric: from 0 to 20)*
+1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira); categorical
+2. sex - student's sex (binary: 'F' - female or 'M' - male); categorical
+3. age - student's age (numeric: from 15 to 22); continuousm (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+4. studytime - weekly study time (numeric: 1 - 10 hours); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+5. higher - wants to take higher education (binary: yes or no); categorical
+6. Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+7. Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+8. health - current health status (numeric: from 1 - very bad to 5 - very good); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+9. absences - number of school absences (numeric: from 0 to 93); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+10. grade - final grade (numeric: from 0 to 20)*; continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 
 **Data Cleaning Process**
 Describe the cleaning process you used on your data. Talk about what issues you encountered.
@@ -60,13 +60,30 @@ attach(selected_data)
 Plots should be clearly labeled, well formatted, and display an aesthetic sense.
 Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
 ```{r}
-hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = 3)
+boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "blue", xlab = "School")
+boxplot(grade ~ sex, main = "Boxplot of Grades by Sex", ylab = "Grade / Scale(0 - 20)", col = "green", xlab = "Sex")
+
+##plot(age, Walc)
+plot(jitter(age, factor = .5), jitter(Walc), pch = 19, col = "red", xlab = "Age",
+     ylab = "Weekend Alcohol Consumption")
+mtext("Weekend Alcohol Consumption vs. Age", cex = 1.2, line = 1)
+mtext(paste("Sample Correlation =", round(cor(age, Walc), 3)), cex = 1.2, line = 0)
+
+hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
 # grade is pretty much the only variable that is normally distributed.. is this an issue?
-boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade (0 - 20)")
-boxplot(grade ~ sex, main = "Boxplot of Grades by Gender", ylab = "Grade (0 - 20)")
+
+library(PerformanceAnalytics)
+chart.Correlation(selected_data[, c(3,4,6:10)], histogram = TRUE, pch = 19)
+##might be useful to transform Walc, Dalc, and absences. for now, I will try a log transformation
+
+transdata <- selected_data[, c(3,4,6:10)]
+transdata$logWalc <- log(transformeddata$Walc)
+transdata$logDalc <- log(transformeddata$Dalc)
+transdata$logabs <- log(transformeddata$absences)
+chart.Correlation(transdata[, c(1,2,5,7:10)], histogram = TRUE, pch = 19)
+##does anyone know why it says NaN in the last column for tehe correlations with lobabs
+
 ```
-
-
 
 **Summary Information**
 
