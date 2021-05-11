@@ -82,6 +82,8 @@ transdata$logDalc <- log(transformeddata$Dalc)
 transdata$logabs <- log(transformeddata$absences)
 chart.Correlation(transdata[, c(1,2,5,7:10)], histogram = TRUE, pch = 19)
 ##does anyone know why it says NaN in the last column for the correlations with logabs
+##sqrt abs
+##dalc none or some
 
 ```
 
@@ -115,3 +117,4 @@ t.test(log10(Walc) ~ school) ## still not significant
 **Conclusions**
 a short paragraph
 ##remember to take our names off!!
+
