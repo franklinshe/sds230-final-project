@@ -92,6 +92,25 @@ Basic tests - t-test, correlation, AND ability to create bootstrap confidence in
 Permutation Test – include at least one.
 Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
+```{r}
+t.test(Walc ~ sex) ##
+t.test(log10(Walc) ~ sex) ## stil significant
+t.test(studytime ~ sex)
+t.test(grade ~ sex)
+t.test(grade ~ school)
+t.test(Walc ~ school) ## not significant
+t.test(log10(Walc) ~ school) ## not significant
+
+##correlations are already provided in the matrix plot above, should we do this again?
+
+##someone please do bootstrap of something here
+
+
+
+
+
+```
+
 
 **Conclusions**
 a short paragraph
