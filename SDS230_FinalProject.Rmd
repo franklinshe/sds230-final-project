@@ -81,7 +81,7 @@ transdata$logWalc <- log(transformeddata$Walc)
 transdata$logDalc <- log(transformeddata$Dalc)
 transdata$logabs <- log(transformeddata$absences)
 chart.Correlation(transdata[, c(1,2,5,7:10)], histogram = TRUE, pch = 19)
-##does anyone know why it says NaN in the last column for tehe correlations with lobabs
+##does anyone know why it says NaN in the last column for the correlations with logabs
 
 ```
 
@@ -94,12 +94,12 @@ Multiple Regression – use either backwards stepwise regression or some form of
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
 t.test(Walc ~ sex) ##
-t.test(log10(Walc) ~ sex) ## stil significant
+t.test(log10(Walc) ~ sex) ## still significant
 t.test(studytime ~ sex)
 t.test(grade ~ sex)
 t.test(grade ~ school)
 t.test(Walc ~ school) ## not significant
-t.test(log10(Walc) ~ school) ## not significant
+t.test(log10(Walc) ~ school) ## still not significant
 
 ##correlations are already provided in the matrix plot above, should we do this again?
 
@@ -114,3 +114,4 @@ t.test(log10(Walc) ~ school) ## not significant
 
 **Conclusions**
 a short paragraph
+##remember to take our names off!!
