@@ -122,7 +122,16 @@ t.test(log10(Walc) ~ school) ## still not significant
 
 
 
+# Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
+mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
+mod1sum <- summary(mod1)
+names(selected_data)[mod1sum$which[which.min(mod1sum$bic), ]][-1] # names of the predictors
 
+gradeBIC <- selected_data[,mod1sum$which[which.min(mod1sum$bic), ]]
+modfin <- lm(grade ~ ., data = gradeBIC)
+summary(modfin) # summary of best model according to BIC
+
+# TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05?
 ```
 
 
