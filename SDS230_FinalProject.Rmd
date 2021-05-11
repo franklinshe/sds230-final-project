@@ -64,18 +64,27 @@ attach(selected_data)
 Plots should be clearly labeled, well formatted, and display an aesthetic sense.
 Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
 ```{r}
-# boxplots of 
+# boxplots of grade by school and by sex
 boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "blue", xlab = "School")
 boxplot(grade ~ sex, main = "Boxplot of Grades by Sex", ylab = "Grade / Scale(0 - 20)", col = "green", xlab = "Sex")
 
-##plot(age, Walc)
-plot(jitter(age, factor = .5), jitter(Walc), pch = 19, col = "red", xlab = "Age",
-     ylab = "Weekend Alcohol Consumption")
+# scatterplots of age and alcohol consumption (weekend and weekday)
+plot(jitter(age, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Age",
+     ylab = "Weekend Alcohol Consumption", cex = 0.5)
 mtext("Weekend Alcohol Consumption vs. Age", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Walc), 3)), cex = 1.2, line = 0)
 
+plot(jitter(age, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Age",
+     ylab = "Weekday Alcohol Consumption", cex = 0.5)
+mtext("Weekday Alcohol Consumption vs. Age", cex = 1.2, line = 1)
+mtext(paste("Sample Correlation =", round(cor(age, Dalc), 3)), cex = 1.2, line = 0)
+
+# histogram of grades
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
-# grade is pretty much the only variable that is normally distributed.. is this an issue?
+
+
+# TODO: tej can u fix the correlation charts to include the new variables (freetime, goout)
+# they are the 6th and 7th variable of selected data, other data is moved up
 
 library(PerformanceAnalytics)
 chart.Correlation(selected_data[, c(3,4,6:10)], histogram = TRUE, pch = 19)
