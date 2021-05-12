@@ -12,7 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # Packages
 library(plyr)
-
+library(car)
+library(leaps)
+library(PerformanceAnalytics)
+source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 ```
 
 **Introduction**
@@ -32,7 +35,7 @@ Background and motivation, not more than a short paragraph
 9. Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 10. health - current health status (numeric: from 1 - very bad to 5 - very good); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 11. absences - number of school absences (numeric: from 0 to 93); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-12. grade - final grade (numeric: from 0 to 20)*; continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+12. grade - final grade (numeric: from 0 to 20); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)*
 
 **Data Cleaning Process**
 Describe the cleaning process you used on your data. Talk about what issues you encountered.
@@ -40,7 +43,6 @@ Demonstrate use of find/replace, data cleaning, dealing with missing values, tex
 
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
-# decided to just use one of the csv files and not merging cause it wasn't working, but if you guys can figure it out pls. but it think just using one is fine.
 selected_data <- all_data[, c("school", "sex", "age", "studytime", "higher", "freetime", "goout", "Dalc", "Walc", "health", "absences", "G3")]
 
 # rename G3 to grade
@@ -52,9 +54,9 @@ selected_data <- selected_data[selected_data$grade != 0,]
 nrow(selected_data)
 names(selected_data)
 head(selected_data)
+str(selected_data)
 
 attach(selected_data)
-# i think the data already comes pretty clean tbh... 
 ```
 
 
@@ -66,36 +68,31 @@ Show appropriate use of at least ONE of each of the following – boxplot, scatt
 boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "blue", xlab = "School")
 boxplot(grade ~ sex, main = "Boxplot of Grades by Sex", ylab = "Grade / Scale(0 - 20)", col = "green", xlab = "Sex")
 
+
 # scatterplots of age and alcohol consumption (weekend and weekday)
 plot(jitter(age, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Age",
      ylab = "Weekend Alcohol Consumption", cex = 0.5)
 mtext("Weekend Alcohol Consumption vs. Age", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Walc), 3)), cex = 1.2, line = 0)
 
-
 plot(jitter(age, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Age",
      ylab = "Weekday Alcohol Consumption", cex = 0.5)
 mtext("Weekday Alcohol Consumption vs. Age", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Dalc), 3)), cex = 1.2, line = 0)
 
-
-# histogram of grades
+# histogram of grade
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
 hist(freetime, main = "Histogram of Freetime", xlab = "Freetime)", col = "orange", breaks = 6)
 hist(goout, main = "Histogram of Going Out", xlab = "Time Going Out With Friends)", col = "orange")
-# TODO: tej can u fix the correlation charts to include the new variables (freetime, goout)
-# they are the 6th and 7th variable of selected data, other data is moved up
 
-
-library(PerformanceAnalytics)
 chart.Correlation(selected_data[, c(3,4,6:12)], histogram = TRUE, pch = 19)
 ##might be useful to transform Walc, Dalc, and absences. for now, I will try a sqrt transformation of abs, and log transformation of Walc and Dalc. 
 
 
 transdata <- selected_data[, c(3,4,6:12)]
-transdata$logWalc <- log(transformeddata$Walc + 1)
-transdata$logDalc <- log(transformeddata$Dalc + 1)
-transdata$sqrtabs <- sqrt(transformeddata$absences)
+transdata$logWalc <- log(transdata$Walc + 1)
+transdata$logDalc <- log(transdata$Dalc + 1)
+transdata$sqrtabs <- sqrt(transdata$absences)
 chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 
 ## dalc should be none or some
@@ -143,7 +140,10 @@ abline(v = actualdiff, col = "blue", lwd = 3)
 text(actualdiff - 0.1, 300 , paste("Actual Diff in Means =", round(actualdiff,2)),srt = 90)
 
 mean(abs(diffvals) >= abs(actualdiff)) ## p-value is approximately 0
+```
 
+
+```{r}
 # Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
 mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
 mod1sum <- summary(mod1)
@@ -154,6 +154,8 @@ summary(modfin) # summary of best model according to BIC
 # TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
 ### maybe R is using alpha = 0.10 and thats why it was included
 
+
+myResPlots2(modfin) # normal quantile and residual plot for model
 ## anova
 
 ```
