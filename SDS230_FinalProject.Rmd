@@ -57,7 +57,6 @@ head(selected_data)
 str(selected_data)
 
 attach(selected_data)
-
 ```
 
 
@@ -99,6 +98,7 @@ chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 ```
 
 **Summary Information**
+*(idk for sure what goes here) Our preliminary descriptive plots show that grades, freetime, and time going out are appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity may need to be considered in our models. (idk if this is like...correct. pls help) Interestingly, there does not appear to be a singificant correlation between age and grades. (pls add more) *
 
 **Analysis**
 Basic tests - t-test, correlation, AND ability to create bootstrap confidence interval for either a t-test or a correlation.
@@ -118,10 +118,17 @@ t.test(Walc ~ school) ## not significant
 t.test(log10(Walc) ~ school) ## still not significant
 t.test(Dalc ~ school) ## not sig
 t.test(log10(Dalc) ~ school) ## still not significant
-
-
-##correlations are already provided in the matrix plot above, should we do this again? 
 ```
+*Discussion of t-test results:*
+**The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.**
+
+```{r}
+##correlations are already provided in the matrix plot above, should we do this again? 
+#### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
+
+
+```
+
 
 ```{r}
 #Bootstrap 1 of grades and Weekday Alcohol Consumption
@@ -282,7 +289,8 @@ qqPlot(bResults, main = "NQ Plot of Bootstrapped Regression Slopes")
 #reminder of regression results
 summary(lm1)
 ```
-
+*Bootstrap Discussion*
+**(lelan can you do this), comparison to t-test, also may need to adjust title of last bootstrap graphs**
 
 ```{r}
 ##Permutation test (grade by school)
@@ -302,7 +310,8 @@ text(actualdiff - 0.1, 300 , paste("Actual Diff in Means =", round(actualdiff,2)
 
 mean(abs(diffvals) >= abs(actualdiff)) ## p-value is approximately 0
 ```
-
+*Permutation Test Discussion*
+**The result of the permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.**
 
 ```{r}
 # Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
@@ -314,10 +323,15 @@ modfin <- lm(grade ~ ., data = gradeBIC)
 summary(modfin) # summary of best model according to BIC
 # TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
 ### maybe R is using alpha = 0.10 and thats why it was included
-
-
 myResPlots2(modfin) # normal quantile and residual plot for model
+
+
+
+
+
 ## anova
+
+
 
 ```
 
