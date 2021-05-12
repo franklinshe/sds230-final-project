@@ -26,7 +26,7 @@ Background and motivation, not more than a short paragraph
 
 1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira); categorical
 2. sex - student's sex (binary: 'F' - female or 'M' - male); categorical
-3. age - student's age (numeric: from 15 to 22); continuousm (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+3. age - student's age (numeric: from 15 to 22); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 4. studytime - weekly study time (numeric: 1 - 10 hours); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 5. higher - wants to take higher education (binary: yes or no); categorical
 6. freetime - free time after school (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
@@ -57,6 +57,7 @@ head(selected_data)
 str(selected_data)
 
 attach(selected_data)
+
 ```
 
 
@@ -95,9 +96,6 @@ transdata$logDalc <- log(transdata$Dalc + 1)
 transdata$sqrtabs <- sqrt(transdata$absences)
 chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 
-## dalc should be none or some
-## for future analysis, it might be preferable to recode Dalc to indicate binary: do they drink on weekdays yes/no.
-
 ```
 
 **Summary Information**
@@ -108,6 +106,7 @@ Permutation Test – include at least one.
 Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
+
 t.test(Walc ~ sex) ## sig
 t.test(log10(Walc) ~ sex) ## still significant
 t.test(Dalc ~ sex) ## sig
@@ -120,10 +119,172 @@ t.test(log10(Walc) ~ school) ## still not significant
 t.test(Dalc ~ school) ## not sig
 t.test(log10(Dalc) ~ school) ## still not significant
 
+
 ##correlations are already provided in the matrix plot above, should we do this again? 
+```
 
-##someone please do bootstrap of something here (Lelan)
+```{r}
+#Bootstrap 1 of grades and Weekday Alcohol Consumption
 
+#Recoding Dalc to a binary, for later use 
+#For some reason, every time you re-run this code, Dalc doesn't update back to numbers, so adding the rm(Dalc2) reverts it 
+rm(Dalc2)
+Dalc2 <- rep(NA, length(Dalc))
+
+for (i in 1:634) {
+  if (Dalc[i] == 1) {
+    Dalc2[i] <- "None"
+  } else {
+    Dalc2[i] <- "Some"
+  }
+}
+
+#t test for the binary version of Dalc 
+t.test(grade ~ Dalc2)
+
+#Make normal quantile plot of grades
+library(car)
+qqPlot(grade, col = 2, pch = 18, main = "Normal Quantile Plot of Grades")
+
+#Boxplot of grades by Dalc2
+boxplot(grade ~ Dalc2, main = "Boxplot of Grades by Weekday Alcohol Consumption", cex.main = 0.7, col = c(2:4), lwd = 2)
+
+#Count number of non-missing values in each level of weekday alcohol consumption
+sum(Dalc2 == "None")
+sum(Dalc2 == "Some")
+
+#Set number of bootstrap samples to take
+N <- 10000
+
+#Make empty vector for sample mean differences
+diffGrade <- rep(NA, N)
+
+for (i in 1:N) {
+  sN <- sample(grade[Dalc2 =="None"], sum(Dalc2 == "None"), replace = TRUE)
+  sS <- sample(grade[Dalc2 =="Some"], sum(Dalc2 == "Some"), replace = TRUE)
+  diffGrade[i] <- mean(sN) - mean(sS)
+}
+
+#Get bootstrap quantiles
+ci <- quantile(diffGrade, c(0.025, 0.975))
+
+#Report these values
+round(ci,1)
+#compare to original 95% CI for the mean
+Gradet_test <- t.test(grade ~ Dalc2)$conf.int
+round(Gradet_test,2)
+
+#Make histogram of bootstrap sample means
+hist(diffGrade, col = "blue", main = "Bootstrapped Sample Means Diff in Grades against Weekday Alcohol Consumption", cex.main = 0.7, xlab = "Grades", breaks = 50)
+
+#Add lines to histogram for CI's
+abline(v = ci, lwd = 3, col = "red")
+abline(v = Gradet_test, lwd = 3, col = "green", lty = 2)
+legend("topright", c("Original CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2,1))
+
+#Normal quantile plot of the bootstrapped differences in means
+qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differences in Means \n of Grades based on Weekday Alcohol Consumption")
+
+```
+
+
+```{r}
+#Bootstrap 2 of grades and Walc (Weekend Alcohol Consumption)
+rm(Walc2)
+Walc2 <- rep(NA, length(Walc))
+
+for (i in 1:634) {
+  if (Walc[i] == 1) {
+    Walc2[i] <- "None"
+  } else {
+    Walc2[i] <- "Some"
+  }
+}
+
+t.test(grade ~ Walc2)
+
+boxplot(grade ~ Walc2, main = "Boxplot of Grades by Weekend Alcohol Consumption", cex.main = 0.7, col = c(2:4), lwd = 2)
+
+N <- 10000
+diffGradeW <- rep(NA, N)
+
+for (i in 1:N) {
+  sNW <- sample(grade[Walc2 =="None"], sum(Walc2 == "None"), replace = TRUE)
+  sSW <- sample(grade[Walc2 =="Some"], sum(Walc2 == "Some"), replace = TRUE)
+  diffGradeW[i] <- mean(sNW) - mean(sSW)
+}
+
+ciW <- quantile(diffGradeW, c(0.025, 0.975))
+round(ciW,1)
+
+Gradet_testW <- t.test(grade ~ Walc2)$conf.int
+round(Gradet_testW,2)
+
+hist(diffGradeW, col = "blue", main = "Bootstrapped Sample Means Diff in Grades against Weekend Alcohol Consumption", cex.main = 0.7, xlab = "Grades", breaks = 50)
+abline(v = ciW, lwd = 3, col = "red")
+abline(v = Gradet_testW, lwd = 3, col = "green", lty = 2)
+legend("topright", c("Original CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2,1))
+
+qqPlot(diffGradeW, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differences in Means \n of Grades based on Weekend Alcohol Consumption")
+```
+
+```{r}
+#Bootstrap 3 of Dalc and age using non-binary data (FOR TEJ AND FRANKIE: IF WE DO NOT PERCEIVE DALC AS CONTINUOUS PLEZ DELETE THIS)
+
+#We have jitter plot for Dalc vs age above
+
+#Calculate the correlation
+(cor1 <- cor(age, Dalc))
+
+#Test if correlation is non-zero
+cor.test(age, Dalc)
+
+#Fit simple linear regression
+lm1 <- lm(Dalc ~ age)
+summary(lm1) 
+
+#Do bootstrap
+n_samp <- 10000
+
+corResults <- rep(NA, n_samp)
+bResults <- rep(NA, n_samp) 
+
+for(i in 1:n_samp){
+  s <- sample(1:634, 634, replace = T)
+  fakeData <- cbind(age[s], Dalc[s])
+  
+  #Get bootstrapped correlation and regression slope
+  corResults[i] <- cor(fakeData[, 1], fakeData[, 2])
+  bResults[i] <- lm(fakeData[, 2] ~ fakeData[, 1])$coef[2]
+}
+
+#Get percentiles for 2.5 and 97.5
+ci_r <- quantile(corResults, c(.025, .975))
+ci_slope <- quantile(bResults, c(.025, .975))
+
+#Histogram of bootstrapped correlation values with CI's (both bootstrapped and theoretical)
+hist(corResults, col = "blue", main = "Bootstrapped Correlations", xlab = "Sample Correlation", breaks = 50)
+abline(v = ci_r, lwd = 3, col = "red")
+abline(v = cor.test(age, Dalc)$conf.int, lwd = 3, col = "green", lty = 2)
+legend(-0.3, 450, c("Theoretical CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2, 1))
+
+library(car)
+qqPlot(corResults, main = "NQ Plot of Bootstrapped Correlations")
+
+#Histogram of bootstrapped regression slopes with CI's (both bootstrapped and theoretical)
+hist(bResults, col = "blue", main = "Bootstrapped Slopes", xlab = "Sample Slope", breaks = 50)
+abline(v = ci_slope, lwd = 3, col = "red")
+abline(v = confint(lm1,'age'), lwd = 3, col = "green", lty = 2)
+legend("topleft", c("Theoretical CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2, 1))
+
+qqPlot(bResults, main = "NQ Plot of Bootstrapped Regression Slopes")
+
+#reminder of regression results
+summary(lm1)
+```
+
+
+```{r}
 ##Permutation test (grade by school)
 (actualdiff <- by(grade, school, mean))
 (actualdiff <- actualdiff[1] - actualdiff[2])
