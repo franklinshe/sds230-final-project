@@ -22,8 +22,9 @@ source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 Background and motivation, not more than a short paragraph
 
 **Data**
-*The data used in this analysis are:
+*The data used in this analysis were collected in a survey of students in two secondary schools. It includes information about gender, social habits, alcohol consumption, grades, etc.
 
+The variables used in this analysis are:
 1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira); categorical
 2. sex - student's sex (binary: 'F' - female or 'M' - male); categorical
 3. age - student's age (numeric: from 15 to 22); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
@@ -107,17 +108,17 @@ Multiple Regression – use either backwards stepwise regression or some form of
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
 
-t.test(Walc ~ sex) ## sig
-t.test(log10(Walc) ~ sex) ## still significant
-t.test(Dalc ~ sex) ## sig
-t.test(log10(Dalc) ~ sex) ## still significant
-t.test(studytime ~ sex) ## sig
-t.test(grade ~ sex) ## sig
-t.test(grade ~ school) ## sig
-t.test(Walc ~ school) ## not significant
-t.test(log10(Walc) ~ school) ## still not significant
-t.test(Dalc ~ school) ## not sig
-t.test(log10(Dalc) ~ school) ## still not significant
+t.test(Walc ~ sex) 
+t.test(log10(Walc) ~ sex) 
+t.test(Dalc ~ sex) 
+t.test(log10(Dalc) ~ sex) 
+t.test(studytime ~ sex) 
+t.test(grade ~ sex)
+t.test(grade ~ school) 
+t.test(Walc ~ school) 
+t.test(log10(Walc) ~ school) 
+t.test(Dalc ~ school) 
+t.test(log10(Dalc) ~ school) 
 ```
 *Discussion of t-test results:*
 **The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.**
@@ -324,6 +325,8 @@ summary(modfin) # summary of best model according to BIC
 # TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
 ### maybe R is using alpha = 0.10 and thats why it was included
 myResPlots2(modfin) # normal quantile and residual plot for model
+
+
 
 
 
