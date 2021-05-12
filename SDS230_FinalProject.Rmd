@@ -111,18 +111,38 @@ Permutation Test – include at least one.
 Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
-t.test(Walc ~ sex) ##
+t.test(Walc ~ sex) ## sig
 t.test(log10(Walc) ~ sex) ## still significant
-t.test(studytime ~ sex)
-t.test(grade ~ sex)
-t.test(grade ~ school)
+t.test(Dalc ~ sex) ## sig
+t.test(log10(Dalc) ~ sex) ## still significant
+t.test(studytime ~ sex) ## sig
+t.test(grade ~ sex) ## sig
+t.test(grade ~ school) ## sig
 t.test(Walc ~ school) ## not significant
 t.test(log10(Walc) ~ school) ## still not significant
+t.test(Dalc ~ school) ## not sig
+t.test(log10(Dalc) ~ school) ## still not significant
 
-##correlations are already provided in the matrix plot above, should we do this again?
+##correlations are already provided in the matrix plot above, should we do this again? 
 
-##someone please do bootstrap of something here
+##someone please do bootstrap of something here (Lelan)
 
+##Permutation test (grade by school)
+(actualdiff <- by(grade, school, mean))
+(actualdiff <- actualdiff[1] - actualdiff[2])
+set.seed(1)
+N <- 10000
+diffvals <- rep(NA, N)
+for (i in 1:N) {
+  fakeschool <- sample(school)  # default is replace = FALSE
+  diffvals[i] <- mean(grade[fakeschool == "GP"]) -  mean(grade[fakeschool == "MS"])
+}
+
+hist(diffvals, col = "yellow", main = "Permuted Sample Means Diff in Grades between Schools", xlab = "Grade Diff", breaks = 50, xlim = c(-1.2, 1.5))
+abline(v = actualdiff, col = "blue", lwd = 3)
+text(actualdiff - 0.1, 300 , paste("Actual Diff in Means =", round(actualdiff,2)),srt = 90)
+
+mean(abs(diffvals) >= abs(actualdiff)) ## p-value is approximately 0
 
 # Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
 mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
@@ -131,8 +151,10 @@ names(selected_data)[mod1sum$which[which.min(mod1sum$bic), ]][-1] # names of the
 gradeBIC <- selected_data[,mod1sum$which[which.min(mod1sum$bic), ]]
 modfin <- lm(grade ~ ., data = gradeBIC)
 summary(modfin) # summary of best model according to BIC
-# TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05?
+# TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
+### maybe R is using alpha = 0.10 and thats why it was included
 
+## anova
 
 ```
 
