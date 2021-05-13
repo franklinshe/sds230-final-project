@@ -311,8 +311,28 @@ text(actualdiff - 0.1, 300 , paste("Actual Diff in Means =", round(actualdiff,2)
 
 mean(abs(diffvals) >= abs(actualdiff)) ## p-value is approximately 0
 ```
+
+```{r}
+##Permutation test (grade by sex)
+(actualdiff1 <- by(grade, sex, mean))
+(actualdiff1 <- actualdiff1[1] - actualdiff1[2])
+set.seed(1)
+N <- 10000
+diffvals1 <- rep(NA, N)
+for (i in 1:N) {
+  fakesex <- sample(sex)  # default is replace = FALSE
+  diffvals1[i] <- mean(grade[fakesex == "F"]) -  mean(grade[fakesex == "M"])
+}
+
+hist(diffvals1, col = "yellow", main = "Permuted Sample Means Diff in Grades between Sex", xlab = "Grade Diff", breaks = 50, xlim = c(-1.2, 1.5))
+abline(v = actualdiff1, col = "blue", lwd = 3)
+text(actualdiff1 - 0.1, 400 , paste("Actual Diff in Means =", round(actualdiff1,2)),srt = 90)
+
+mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
+```
 *Permutation Test Discussion*
-**The result of the permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.**
+**The result of the first permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.**
+**The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.**
 
 ```{r}
 # Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
@@ -322,19 +342,31 @@ names(selected_data)[mod1sum$which[which.min(mod1sum$bic), ]][-1] # names of the
 gradeBIC <- selected_data[,mod1sum$which[which.min(mod1sum$bic), ]]
 modfin <- lm(grade ~ ., data = gradeBIC)
 summary(modfin) # summary of best model according to BIC
+
 # TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
-### maybe R is using alpha = 0.10 and thats why it was included
+### maybe R is using alpha = 0.10 and thats why it was included, also i think ur work looks good!
 myResPlots2(modfin) # normal quantile and residual plot for model
 
 
 
 
+#interaction plot - there does appear to be an interaction
+interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
+interaction.plot(Dalc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and School")
+interaction.plot(Walc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and Sex")
+interaction.plot(Dalc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and Sex")
+interaction.plot(absences, Walc, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Absences and Walc")
+interaction.plot(absences, Dalc, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Absences and Dalc")
+### these last two are uglyyyyy should we get rid of them or keep them? 
 
+mod2 <- lm(grade ~ ., data = selected_data)
+mod2 <- lm(grade ~ Walc*sex + absences*Walc + school + sex + age + studytime + higher + freetime + health + absences)
+summary(mod2)
+##can I not take out walc if it's in the interaction terms (help @ frankie)
+##only significant interactions Walc and sex and Walc and absences
 
 
 ## anova
-
-
 
 ```
 
