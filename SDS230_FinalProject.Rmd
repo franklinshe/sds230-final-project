@@ -335,6 +335,8 @@ mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 **The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.**
 
 ```{r}
+#### @Frankie, can u add a regression plan: "Few sentence intro to plan for multiple regression, variables used, process, etc." 
+### also add  "Discussion of R-squared, parameter direction and significance. Discussion of criteria used to choose final model" after the model
 # Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
 mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
 mod1sum <- summary(mod1)
