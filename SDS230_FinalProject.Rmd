@@ -209,6 +209,8 @@ for (i in 1:634) {
   }
 }
 
+selected_data$Walc2 <- Walc2
+
 t.test(grade ~ Walc2)
 
 boxplot(grade ~ Walc2, main = "Boxplot of Grades by Weekend Alcohol Consumption", cex.main = 0.7, col = c(2:4), lwd = 2)
@@ -369,6 +371,30 @@ summary(mod2)
 
 
 ## anova
+interaction.plot(Walc2, sex, grade, type = 'b', lwd = 3, col = c('red','blue'), main = "Interaction Plot of Walc2 and Sex")
+gradeaov <- aov(grade ~ Walc2 + sex + Walc2*sex)
+summary(gradeaov)
+gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
+summary(gradelm)
+
+#turn into one-way anova and use Tukey!
+combo <- as.factor(paste(Walc2, sex))
+gradeaov2 <- aov(grade ~ combo)
+summary(gradeaov2)
+summary.lm(gradeaov2)
+
+par(mar = c(5, 15, 4, 2))
+plot(TukeyHSD(gradeaov2), las = 1)
+
+bartlett.test(grade, combo)
+leveneTest(grade, combo)
+
+myResPlots2(gradeaov)
+
+sds <- tapply(grade, combo, sd)
+print("Ratio of Max/Min Sample SD")
+round(max(sds)/min(sds), 1)
+oneway.test(grade ~ combo)
 
 ```
 
