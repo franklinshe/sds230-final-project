@@ -62,29 +62,34 @@ attach(selected_data)
 
 
 **Descriptive Plots**
-Plots should be clearly labeled, well formatted, and display an aesthetic sense.
-Show appropriate use of at least ONE of each of the following – boxplot, scatterplot (can be matrix plot), normal quantile plot (can be related to regression), residual plots, histogram.
 ```{r}
-# boxplots of grade by school and by sex
-boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "blue", xlab = "School")
+# boxplots of grade by school and by sex (with superimposed mean)
+boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "lightblue", xlab = "School")
+means <- tapply(grade, school, mean)
+points(means, col = "red", pch = 19, cex = 1.2)
+text(x = c(1:6), y = means + 1, labels = round(means,1))
+
 boxplot(grade ~ sex, main = "Boxplot of Grades by Sex", ylab = "Grade / Scale(0 - 20)", col = "green", xlab = "Sex")
+means <- tapply(grade, sex, mean)
+points(means, col = "red", pch = 19, cex = 1.2)
+text(x = c(1:6), y = means + 1, labels = round(means,1))
 
 
-# scatterplots of age and alcohol consumption (weekend and weekday)
-plot(jitter(age, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Age",
+# scatterplots of grade and alcohol consumption (weekend and weekday)
+plot(jitter(grade, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Grade",
      ylab = "Weekend Alcohol Consumption", cex = 0.5)
-mtext("Weekend Alcohol Consumption vs. Age", cex = 1.2, line = 1)
+mtext("Weekend Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Walc), 3)), cex = 1.2, line = 0)
 
-plot(jitter(age, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Age",
+plot(jitter(grade, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Grade",
      ylab = "Weekday Alcohol Consumption", cex = 0.5)
-mtext("Weekday Alcohol Consumption vs. Age", cex = 1.2, line = 1)
+mtext("Weekday Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Dalc), 3)), cex = 1.2, line = 0)
 
 # histogram of grade
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
-hist(freetime, main = "Histogram of Freetime", xlab = "Freetime)", col = "orange", breaks = 6)
-hist(goout, main = "Histogram of Going Out", xlab = "Time Going Out With Friends)", col = "orange")
+hist(freetime + 0.1, main = "Histogram of Freetime", xlab = "Freetime", col = "orange", breaks = 5)
+hist(goout + 0.1, main = "Histogram of Going Out", xlab = "Time Going Out With Friends)", col = "orange", breaks = 5)
 
 chart.Correlation(selected_data[, c(3,4,6:12)], histogram = TRUE, pch = 19)
 ##might be useful to transform Walc, Dalc, and absences. for now, I will try a sqrt transformation of abs, and log transformation of Walc and Dalc. 
@@ -107,8 +112,8 @@ Permutation Test – include at least one.
 Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
-
-t.test(Walc ~ sex) 
+# T-tests
+t.test(Walc ~ sex)
 t.test(log10(Walc) ~ sex) 
 t.test(Dalc ~ sex) 
 t.test(log10(Dalc) ~ sex) 
@@ -126,7 +131,7 @@ t.test(log10(Dalc) ~ school)
 ```{r}
 ##correlations are already provided in the matrix plot above, should we do this again? 
 #### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
-
+cor(Dalc, Walc)
 
 ```
 
