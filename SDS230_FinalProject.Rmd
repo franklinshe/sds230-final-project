@@ -140,17 +140,7 @@ cor(Dalc, Walc)
 #Bootstrap 1 of grades and Weekday Alcohol Consumption
 
 #Recoding Dalc to a binary, for later use 
-#For some reason, every time you re-run this code, Dalc doesn't update back to numbers, so adding the rm(Dalc2) reverts it 
-rm(Dalc2)
-Dalc2 <- rep(NA, length(Dalc))
-
-for (i in 1:634) {
-  if (Dalc[i] == 1) {
-    Dalc2[i] <- "None"
-  } else {
-    Dalc2[i] <- "Some"
-  }
-}
+Dalc2 <- ifelse(Dalc == 1, "None", "Some")
 
 #t test for the binary version of Dalc 
 t.test(grade ~ Dalc2)
@@ -203,18 +193,7 @@ qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differe
 
 ```{r}
 #Bootstrap 2 of grades and Walc (Weekend Alcohol Consumption)
-rm(Walc2)
-Walc2 <- rep(NA, length(Walc))
 
-for (i in 1:634) {
-  if (Walc[i] == 1) {
-    Walc2[i] <- "None"
-  } else {
-    Walc2[i] <- "Some"
-  }
-}
-
-selected_data$Walc2 <- Walc2
 
 t.test(grade ~ Walc2)
 
