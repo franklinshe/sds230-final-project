@@ -43,7 +43,7 @@ The variables used in this analysis are:
 
 *
 **Data Cleaning Process**
-Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and we removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. 
+**Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and we removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. Later, for some analyses we recode Dalc and Walc to be binary because many students selected the lowest option on the scale.** 
 
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
@@ -110,10 +110,6 @@ chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 *Our preliminary descriptive plots show that grades, freetime, and time going out appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity between these variables may need to be considered in our models. Interestingly, there does not appear to be a significant correlation between age and grades or studytime or freetime.*
 
 **Analysis**
-Basic tests - t-test, correlation, AND ability to create bootstrap confidence interval for either a t-test or a correlation.
-Permutation Test – include at least one.
-Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
-AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
 # t-tests
 t.test(Walc ~ sex)
@@ -266,7 +262,7 @@ ci_slope <- quantile(bResults, c(.025, .975))
 hist(corResults, col = "blue", main = "Bootstrapped Correlations", xlab = "Sample Correlation", breaks = 50)
 abline(v = ci_r, lwd = 3, col = "red")
 abline(v = cor.test(age, Dalc)$conf.int, lwd = 3, col = "green", lty = 2)
-legend(-0.3, 450, c("Theoretical CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2, 1))
+legend("topleft", c("Theoretical CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2, 1))
 
 library(car)
 qqPlot(corResults, main = "NQ Plot of Bootstrapped Correlations")
@@ -283,7 +279,13 @@ qqPlot(bResults, main = "NQ Plot of Bootstrapped Regression Slopes")
 summary(lm1)
 ```
 *Bootstrap Discussion*
-**(lelan can you do this), comparison to t-test, also may need to adjust title of last bootstrap graphs**
+**The t-test for the relationship between weekday alcohol consumption and a student's grades says that there is a significant difference in students' grades depending on whether they drank some or none on weekdays. The p value is extremely low in the t-test. This concurs with the bootstrap's results, which have 95% confidence intervals that almost directly overlap with the theoretical intervals. All parts of the 95% CI for differences in mean are also above 0, which show that we have 95% confidence that there is a significant positive difference between those who drink some and none based on the bootstrap. 
+
+All of the above applies for the relationship between weekend alcohol consumption and a student's grades.
+
+The only difference between the two is that the range of means within the 95% confidence interval is between 0.66 and 1.56 for weekday alcohol consumption, and it is between 0.18 and 1.04 for weekend alcohol consumption. This means that on average there is a greater difference in grades between students who drink some on the weekday than on the weekends as compared to those who do not. 
+
+For the third bootstrap between weekday alcohol consumption and age, there is a significant difference as well with a low p value from the linear regression. The CI for correlation values is 0.0466 and 0.228, and the CI for slopes is 0.0347 and 0.174. The theoretical CI are narrower than the bootstrapped CI for both correlations and slopes, so the real CI may be slightly larger than what the linear models suggest. Nevertheless, the CIs do not include 0, so the bootstrapped values still show that there is a significant difference.**
 
 ```{r}
 ##Permutation test 1 (grade by school)
