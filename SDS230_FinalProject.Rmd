@@ -19,7 +19,8 @@ source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 ```
 
 **Introduction**
-Background and motivation, not more than a short paragraph
+Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression.
+
 
 **Data**
 *The data used in this analysis were collected in a survey of students in two secondary schools. It includes information about gender, social habits, alcohol consumption, grades, etc.
@@ -39,7 +40,7 @@ The variables used in this analysis are:
 12. grade - final grade (numeric: from 0 to 20); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)*
 
 **Data Cleaning Process**
-Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. 
+Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and we removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. 
 
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
