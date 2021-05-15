@@ -49,6 +49,8 @@ Our data did not require much cleaning. We renamed the column G3 to "grade" to p
 all_data <- read.csv("student-por.csv", header=TRUE)
 selected_data <- all_data[, c("school", "sex", "age", "studytime", "higher", "freetime", "goout", "Dalc", "Walc", "health", "absences", "G3")]
 
+# Data Cleaning
+
 # rename G3 to grade
 selected_data <- rename(selected_data, c("G3"="grade"))
 
@@ -77,17 +79,16 @@ means <- tapply(grade, sex, mean)
 points(means, col = "red", pch = 19, cex = 1.2)
 text(x = c(1:6), y = means + 1, labels = round(means,1))
 
-
 # Graphics - Scatterplot (grade and weekend and weekday alcohol consumption)
-plot(jitter(grade, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Grade",
-     ylab = "Weekend Alcohol Consumption", cex = 0.5)
-mtext("Weekend Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
-mtext(paste("Sample Correlation =", round(cor(age, Walc), 3)), cex = 1.2, line = 0)
+plot(jitter(Walc, factor = 1), jitter(grade), pch = 19, col = "red", xlab = "Weekend Alcohol Consumption",
+     ylab = "Grade", cex = 0.5)
+mtext("Grade vs. Weekend Alcohol Consumption", cex = 1.2, line = 1)
+mtext(paste("Sample Correlation =", round(cor(grade, Walc), 3)), cex = 1.2, line = 0)
 
-plot(jitter(grade, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Grade",
-     ylab = "Weekday Alcohol Consumption", cex = 0.5)
-mtext("Weekday Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
-mtext(paste("Sample Correlation =", round(cor(age, Dalc), 3)), cex = 1.2, line = 0)
+plot(jitter(Dalc, factor = 1), jitter(grade), pch = 19, col = "blue", xlab = "Weekday Alcohol Consumption",
+     ylab = "Grade", cex = 0.5)
+mtext("Grade vs. Weekday Alcohol Consumption", cex = 1.2, line = 1)
+mtext(paste("Sample Correlation =", round(cor(grade, Dalc), 3)), cex = 1.2, line = 0)
 
 # Graphics - Histogram (grade, freetime, and going out)
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
@@ -107,7 +108,7 @@ chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 ```
 
 **Summary Information**
-*(idk for sure what goes here) Our preliminary descriptive plots show that grades, freetime, and time going out are appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity may need to be considered in our models. (idk if this is like...correct. pls help) Interestingly, there does not appear to be a singificant correlation between age and grades. (pls add more) *
+*Our preliminary descriptive plots show that grades, freetime, and time going out appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity between these variables may need to be considered in our models. Interestingly, there does not appear to be a significant correlation between age and grades or studytime or freetime.*
 
 **Analysis**
 Basic tests - t-test, correlation, AND ability to create bootstrap confidence interval for either a t-test or a correlation.
@@ -116,6 +117,7 @@ Multiple Regression – use either backwards stepwise regression or some form of
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
 # Basic Tests - T-test
+
 t.test(Walc ~ sex)
 t.test(log10(Walc) ~ sex) 
 t.test(Dalc ~ sex) 
@@ -135,14 +137,16 @@ t.test(log10(Dalc) ~ school)
 # Basic Tests - Correlation
 ##correlations are already provided in the matrix plot above, should we do this again? 
 #### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
+
 cor.test(Dalc, Walc)
 cor.test(age, grade)
+cor.test(Dalc, grade)
+cor.test(Walc, grade)
 cor.test(freetime, goout)
 cor.test(goout, Walc)
-
-# any others that are important?
 ```
-
+*Discussion of correlation results:*
+**(See Matrix Plot for more correlations.)  **
 
 ```{r}
 # Basic Tests - Bootstrap
@@ -231,7 +235,7 @@ qqPlot(diffGradeW, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differ
 ```
 
 ```{r}
-#Bootstrap 3 of Dalc and age using non-binary data (FOR TEJ AND FRANKIE: IF WE DO NOT PERCEIVE DALC AS CONTINUOUS PLEZ DELETE THIS)
+#Bootstrap 3 of Dalc and age using non-binary data 
 
 #We have jitter plot for Dalc vs age above
 
@@ -288,8 +292,8 @@ summary(lm1)
 **(lelan can you do this), comparison to t-test, also may need to adjust title of last bootstrap graphs**
 
 ```{r}
-# Basic Tests - Permutation Test
-##Permutation test (grade by school)
+# Basic Tests - Permutation Test (grade by school)
+
 (actualdiff <- by(grade, school, mean))
 (actualdiff <- actualdiff[1] - actualdiff[2])
 set.seed(1)
@@ -308,7 +312,7 @@ mean(abs(diffvals) >= abs(actualdiff)) ## p-value is approximately 0
 ```
 
 ```{r}
-##Permutation test (grade by sex)
+# Permutation test 2 (grade by sex)
 (actualdiff1 <- by(grade, sex, mean))
 (actualdiff1 <- actualdiff1[1] - actualdiff1[2])
 set.seed(1)
@@ -330,29 +334,44 @@ mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 **The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.**
 
 *Multiple Regression - Description of Plan*
-Few sentence intro to plan for multiple regression, variables used, process, etc.
+**We perform backwards step-wise multiple regression predicting grade. Our plan is to include any interactions indicated by interaction plots and all variables (school, sex, age, studytime, higher education, freetime, goout, Dalc, Walc, health, absences, grade), then remove non-significant predictors in order of least significance to most significance, leaving only significant predictors. We transform Walc, Dalc, and absences as indicated and discussed in our matrix plot above. We begin with step-wise removal of interaction terms, then of the remaining predictors. Because we have categorical predictors, we use backwards stepwise regression instead of best subsets regression.**
 
 ```{r}
 # Multiple Regression to predict grade (Backwards Stepwise Regression)
 
-# Fit model with all predictors
-mod1 <- lm(grade  ~ ., data = selected_data)
-summary(mod1)
+##transformations indicated in matrix plot
+logWalc <- log(Walc + 1)
+logDalc <- log(Dalc + 1)
+sqrtabs <- sqrt(absences)
 
-mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
-mod1sum <- summary(mod1)
-names(selected_data)[mod1sum$which[which.min(mod1sum$bic), ]][-1] # names of the predictors
-gradeBIC <- selected_data[,mod1sum$which[which.min(mod1sum$bic), ]]
-modfin <- lm(grade ~ ., data = gradeBIC)
-summary(modfin) # summary of best model according to BIC
+#interaction plot - there does appear to be an interaction
+interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
+interaction.plot(Dalc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and School")
+interaction.plot(Walc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and Sex")  ### especially not paralell here
+interaction.plot(Dalc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and Sex")
 
-# TODO: pls check my work ^^^ ... it seems one of the chosen predictors (freetime) has a p-value greater than 0.05? 
-### maybe R is using alpha = 0.10 and thats why it was included, also i think ur work looks good!
-myResPlots2(modfin) # normal quantile and residual plot for model
 
+mod2 <- lm(grade ~ ., data = selected_data)
+
+##backwards step-wise regression, resulting model
+mod2 <- lm(grade ~ Walc*sex + school + sex + age + studytime + higher + freetime + health + sqrtabs)
+summary(mod2)
+
+##boxcox (delete)
+trans1 <- boxCox(mod2)
+(trans1$x[which.max(trans1$y)]) ## close to 1! good ?
 ```
 *Multiple Regression - Residual Plots*
 Normal Quantile Plot of residuals, plot of fits vs. residuals, discussion
+#### check on what the assumptions of multiple regression are
+- residuals normally distr
+- ind vars not correlated w eachother
+- no heteroskedasticity
+```{r}
+
+myResPlots2(mod2) # normal quantile and residual plot for model
+
+```
 
 
 *Multiple Regression - Results and Discussion*
@@ -370,25 +389,22 @@ interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue',
 interaction.plot(Dalc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and School")
 interaction.plot(Walc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and Sex")
 interaction.plot(Dalc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and Sex")
-interaction.plot(absences, Walc, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Absences and Walc")
-interaction.plot(absences, Dalc, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Absences and Dalc")
-### these last two are uglyyyyy should we get rid of them or keep them? 
 
-mod2 <- lm(grade ~ ., data = selected_data)
-mod2 <- lm(grade ~ Walc*sex + absences*Walc + school + sex + age + studytime + higher + freetime + health + absences)
-summary(mod2)
-##can I not take out walc if it's in the interaction terms (help @ frankie)
-##only significant interactions Walc and sex and Walc and absences
+
+
 
 
 ## anova
 interaction.plot(Walc2, sex, grade, type = 'b', lwd = 3, col = c('red','blue'), main = "Interaction Plot of Walc2 and Sex")
 gradeaov <- aov(grade ~ Walc2 + sex + Walc2*sex)
 summary(gradeaov)
+
+# 
 gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
 summary(gradelm)
 
-#turn into one-way anova and use Tukey!
+# Comparing Pairs of Means in Two-Way ANOVA (turn into one-way anova and use Tukey)
+
 combo <- as.factor(paste(Walc2, sex))
 gradeaov2 <- aov(grade ~ combo)
 summary(gradeaov2)
