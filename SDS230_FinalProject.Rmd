@@ -136,7 +136,7 @@ cor.test(freetime, goout)
 cor.test(goout, Walc)
 ```
 *Discussion of correlation results:*
-**(See Matrix Plot for more correlations.)  **
+**(See Matrix Plot for more correlations.) We found statistically significant positive correlations between Dalc and Walc (p-value < 2.2e-16), freetime and goout ( p-value < 2.2e-16), and goout and Walc (p-value < 2.2e-16). For these, we reject the null hypothesis that the true correlation is equal to 0. The correlation between age and grade was not statistically significant (p-value = 0.3393, above alpha 0.05), and we do not reject the null hypothesis that the correlation is equal to zero. We found statistically significant negative correlations between Dalc and grade (p-value = 8.19e-08) and Walc and grade (p-value = 2.743e-06). For these, we reject the null hypothesis that the truee correlation is equal to 0.**
 
 ```{r}
 #Bootstrap 1 of grades and Weekday Alcohol Consumption
