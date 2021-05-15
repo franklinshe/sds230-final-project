@@ -66,7 +66,7 @@ attach(selected_data)
 
 **Descriptive Plots**
 ```{r}
-# boxplots of grade by school and by sex (with superimposed mean)
+# Graphics - Boxplot (grade by school and by sex with superimposed mean)
 boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "lightblue", xlab = "School")
 means <- tapply(grade, school, mean)
 points(means, col = "red", pch = 19, cex = 1.2)
@@ -78,7 +78,7 @@ points(means, col = "red", pch = 19, cex = 1.2)
 text(x = c(1:6), y = means + 1, labels = round(means,1))
 
 
-# scatterplots of grade and alcohol consumption (weekend and weekday)
+# Graphics - Scatterplot (grade and weekend and weekday alcohol consumption)
 plot(jitter(grade, factor = 1), jitter(Walc), pch = 19, col = "red", xlab = "Grade",
      ylab = "Weekend Alcohol Consumption", cex = 0.5)
 mtext("Weekend Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
@@ -89,7 +89,7 @@ plot(jitter(grade, factor = 1), jitter(Dalc), pch = 19, col = "blue", xlab = "Gr
 mtext("Weekday Alcohol Consumption vs. Grade", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(age, Dalc), 3)), cex = 1.2, line = 0)
 
-# histogram of grade
+# Graphics - Histogram (grade, freetime, and going out)
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
 hist(freetime + 0.1, main = "Histogram of Freetime", xlab = "Freetime", col = "orange", breaks = 5)
 hist(goout + 0.1, main = "Histogram of Going Out", xlab = "Time Going Out With Friends)", col = "orange", breaks = 5)
@@ -115,7 +115,7 @@ Permutation Test – include at least one.
 Multiple Regression – use either backwards stepwise regression or some form of best subsets regression. Should include residual plots. A GLM with a mix of continuous and categorical predictors is fine here.
 AT LEAST ONE OF THE FOLLOWING TECHNIQUES – ANOVA, ANCOVA, Logistic Regression, Multinomial Regression, OR data scraping off a website.
 ```{r}
-# T-tests
+# Basic Tests - T-test
 t.test(Walc ~ sex)
 t.test(log10(Walc) ~ sex) 
 t.test(Dalc ~ sex) 
@@ -132,6 +132,7 @@ t.test(log10(Dalc) ~ school)
 **The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.**
 
 ```{r}
+# Basic Tests - Correlation
 ##correlations are already provided in the matrix plot above, should we do this again? 
 #### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
 cor.test(Dalc, Walc)
@@ -144,7 +145,7 @@ cor.test(goout, Walc)
 
 
 ```{r}
-#Bootstrap 1 of grades and Weekday Alcohol Consumption
+# Basic Tests - Bootstrap
 
 #Recoding Dalc to a binary, for later use 
 Dalc2 <- ifelse(Dalc == 1, "None", "Some")
@@ -287,6 +288,7 @@ summary(lm1)
 **(lelan can you do this), comparison to t-test, also may need to adjust title of last bootstrap graphs**
 
 ```{r}
+# Basic Tests - Permutation Test
 ##Permutation test (grade by school)
 (actualdiff <- by(grade, school, mean))
 (actualdiff <- actualdiff[1] - actualdiff[2])
@@ -331,7 +333,12 @@ mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 Few sentence intro to plan for multiple regression, variables used, process, etc.
 
 ```{r}
-# Multiple Regression to predict grade (Best Subsets Regression, Bayesian Information Criteria)
+# Multiple Regression to predict grade (Backwards Stepwise Regression)
+
+# Fit model with all predictors
+mod1 <- lm(grade  ~ ., data = selected_data)
+summary(mod1)
+
 mod1 <- regsubsets(grade ~ ., data = selected_data, nvmax = 11)
 mod1sum <- summary(mod1)
 names(selected_data)[mod1sum$which[which.min(mod1sum$bic), ]][-1] # names of the predictors
@@ -355,6 +362,8 @@ Results of final model displayed. Discussion of R-squared, parameter direction a
 Transformations, heteroskedasticity, completeness, etc.
 
 ```{r}
+
+# ANOVA
 
 #interaction plot - there does appear to be an interaction
 interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
