@@ -39,8 +39,7 @@ The variables used in this analysis are:
 12. grade - final grade (numeric: from 0 to 20); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)*
 
 **Data Cleaning Process**
-Describe the cleaning process you used on your data. Talk about what issues you encountered.
-Demonstrate use of find/replace, data cleaning, dealing with missing values, text character replacement, matching. It’s ok if your data didn’t require much of this.
+Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. 
 
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
