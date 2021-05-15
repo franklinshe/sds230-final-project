@@ -27,17 +27,20 @@ Background and motivation, not more than a short paragraph
 The variables used in this analysis are:
 1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira); categorical
 2. sex - student's sex (binary: 'F' - female or 'M' - male); categorical
-3. age - student's age (numeric: from 15 to 22); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-4. studytime - weekly study time (numeric: 1 - 10 hours); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+3. age - student's age (numeric: from 15 to 22); continuous\*
+4. studytime - weekly study time (numeric: 1 - 10 hours); continuous\*
 5. higher - wants to take higher education (binary: yes or no); categorical
-6. freetime - free time after school (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-7. goout - going out with friends (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-8. Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-9. Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-10. health - current health status (numeric: from 1 - very bad to 5 - very good); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-11. absences - number of school absences (numeric: from 0 to 93); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
-12. grade - final grade (numeric: from 0 to 20); continuous (discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)*
+6. freetime - free time after school (numeric: from 1 - very low to 5 - very high); continuous\*
+7. goout - going out with friends (numeric: from 1 - very low to 5 - very high); continuous\*
+8. Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous\*
+9. Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high); continuous\*
+10. health - current health status (numeric: from 1 - very bad to 5 - very good); continuous\*
+11. absences - number of school absences (numeric: from 0 to 93); continuous\*
+12. grade - final grade (numeric: from 0 to 20); continuous\*
 
+\*(discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
+
+*
 **Data Cleaning Process**
 Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. 
 
