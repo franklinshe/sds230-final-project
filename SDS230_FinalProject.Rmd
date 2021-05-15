@@ -327,30 +327,29 @@ mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 **The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.**
 
 *Multiple Regression - Description of Plan*
-Few sentence intro to plan for multiple regression, variables used, process, etc.
-
-
+**We perform backwards step-wise multiple regression predicting grade. Our plan is to include any interactions indicated by interaction plots and all variables (school, sex, age, studytime, higher education, freetime, goout, Dalc, Walc, health, absences, grade), then remove non-significant predictors in order of least significance to most significance, leaving only significant predictors. We transform Walc, Dalc, and absences as indicated and discussed in our matrix plot above. We begin with step-wise removal of interaction terms, then of the remaining predictors. Because we have categorical predictors, we use backwards stepwise regression instead of best subsets regression.**
 
 ```{r}
+##transformations indicated in matrix plot
+logWalc <- log(Walc + 1)
+logDalc <- log(Dalc + 1)
+sqrtabs <- sqrt(absences)
+
 #interaction plot - there does appear to be an interaction
 interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
 interaction.plot(Dalc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and School")
 interaction.plot(Walc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and Sex")  ### especially not paralell here
 interaction.plot(Dalc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and Sex")
 
+
 mod2 <- lm(grade ~ ., data = selected_data)
 
-##transformations indicated in matrix plot
-logWalc <- log(Walc + 1)
-logDalc <- log(Dalc + 1)
-sqrtabs <- sqrt(absences)
+
 
 ##backwards step-wise regression, resulting model
 mod2 <- lm(grade ~ Walc*sex + school + sex + age + studytime + higher + freetime + health + sqrtabs)
 summary(mod2)
 
-
-myResPlots2(mod2) # normal quantile and residual plot for model
 
 ##boxcox (delete)
 trans1 <- boxCox(mod2)
@@ -358,6 +357,15 @@ trans1 <- boxCox(mod2)
 ```
 *Multiple Regression - Residual Plots*
 Normal Quantile Plot of residuals, plot of fits vs. residuals, discussion
+#### check on what the assumptions of multiple regression are
+- residuals normally distr
+- ind vars not correlated w eachother
+- no heteroskedasticity
+```{r}
+
+myResPlots2(mod2) # normal quantile and residual plot for model
+
+```
 
 
 *Multiple Regression - Results and Discussion*
