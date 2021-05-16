@@ -16,14 +16,8 @@ library(PerformanceAnalytics)
 source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 ```
 
-<<<<<<< HEAD
 ## Introduction
 Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression. We perform analysis of variance to identify differences in grades between groups that consume alcohol on weekends.
-=======
-**Introduction**
-*Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression. We perform analysis of variance to identify differences in grades between groups that consume alcohol on weekends.*
->>>>>>> 60071be0acd812e5f73a0e0a2d5b8f8216f31b45
-
 
 ## Data
 The data used in this analysis were collected in a survey of students in two secondary schools. It includes information about gender, social habits, alcohol consumption, grades, etc.
