@@ -5,6 +5,7 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=6, fig.height=4) 
 ```
 
 ```{r, include = FALSE} 
@@ -55,14 +56,14 @@ selected_data <- selected_data[selected_data$grade != 0,]
 
 nrow(selected_data)
 names(selected_data)
-head(selected_data)
 str(selected_data)
 
 attach(selected_data)
 ```
 
+
 ## Descriptive Plots
-```{r}
+```{r, echo=FALSE}
 # Graphics - Boxplot (grade by school and by sex with superimposed mean)
 boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "lightblue", xlab = "School")
 means <- tapply(grade, school, mean)
@@ -85,21 +86,18 @@ plot(jitter(Dalc, factor = 1), jitter(grade), pch = 19, col = "blue", xlab = "We
 mtext("Grade vs. Weekday Alcohol Consumption", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(grade, Dalc), 3)), cex = 1.2, line = 0)
 
-# Graphics - Histogram (grade, freetime, and going out)
+# Graphics - Histogram 
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
-hist(freetime + 0.1, main = "Histogram of Freetime", xlab = "Freetime", col = "orange", breaks = 5)
-hist(goout + 0.1, main = "Histogram of Going Out", xlab = "Time Going Out With Friends)", col = "orange", breaks = 5)
+
 
 chart.Correlation(selected_data[, c(3,4,6:12)], histogram = TRUE, pch = 19)
 ##might be useful to transform Walc, Dalc, and absences. for now, I will try a sqrt transformation of abs, and log transformation of Walc and Dalc. 
-
 
 transdata <- selected_data[, c(3,4,6:12)]
 transdata$logWalc <- log(transdata$Walc + 1)
 transdata$logDalc <- log(transdata$Dalc + 1)
 transdata$sqrtabs <- sqrt(transdata$absences)
 chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
-
 ```
 
 ### Summary Information
@@ -110,29 +108,33 @@ Our preliminary descriptive plots show that grades, freetime, and time going out
 ### Basic Tests - T-test
 ```{r}
 t.test(Walc ~ sex)
-t.test(log10(Walc) ~ sex) 
-t.test(Dalc ~ sex) 
-t.test(log10(Dalc) ~ sex) 
-t.test(studytime ~ sex) 
 t.test(grade ~ sex)
+```
+
+```{r, eval=FALSE}
 t.test(grade ~ school) 
 t.test(Walc ~ school) 
+t.test(studytime ~ sex) 
+t.test(Dalc ~ sex) 
+t.test(log10(Walc) ~ sex) 
+t.test(log10(Dalc) ~ sex) 
 t.test(log10(Walc) ~ school) 
 t.test(Dalc ~ school) 
 t.test(log10(Dalc) ~ school) 
 ```
+
 **Discussion of t-test results**
 The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.
 
 ### Basic Tests - Correlation
 ```{r}
-##correlations are already provided in the matrix plot above, should we do this again? 
-#### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
+cor.test(Walc, grade)
+```
 
+```{r, eval=FALSE}
+cor.test(Dalc, grade)
 cor.test(Dalc, Walc)
 cor.test(age, grade)
-cor.test(Dalc, grade)
-cor.test(Walc, grade)
 cor.test(freetime, goout)
 cor.test(goout, Walc)
 ```
@@ -193,7 +195,7 @@ qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differe
 ```
 
 
-```{r}
+```{r, EVAL = F}
 #Bootstrap 2 of grades and Walc (Weekend Alcohol Consumption)
 Walc2 <- ifelse(Walc == 1, "None", "Some")
 
@@ -226,15 +228,10 @@ qqPlot(diffGradeW, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differ
 
 ```{r}
 #Bootstrap 3 of Dalc and age using non-binary data 
-
-#We have jitter plot for Dalc vs age above
-
 #Calculate the correlation
 (cor1 <- cor(age, Dalc))
-
 #Test if correlation is non-zero
 cor.test(age, Dalc)
-
 #Fit simple linear regression
 lm1 <- lm(Dalc ~ age)
 summary(lm1) 
@@ -275,8 +272,6 @@ legend("topleft", c("Theoretical CI","Boot CI"), lwd = 3, col = c("green","red")
 
 qqPlot(bResults, main = "NQ Plot of Bootstrapped Regression Slopes")
 
-#reminder of regression results
-summary(lm1)
 ```
 **Bootstrap Discussion**
 The t-test for the relationship between weekday alcohol consumption and a student's grades says that there is a significant difference in students' grades depending on whether they drank some or none on weekdays. The p value is extremely low in the t-test. This concurs with the bootstrap's results, which have 95% confidence intervals that almost directly overlap with the theoretical intervals. All parts of the 95% CI for differences in mean are also above 0, which show that we have 95% confidence that there is a significant positive difference between those who drink some and none based on the bootstrap. 
@@ -360,7 +355,7 @@ The adjusted R-squared value of the model is 0.23, which means our model account
 
 **Multiple Regression - Residual Plots**
 ```{r}
-myResPlots2(mod2) # normal quantile and residual plot for model
+myResPlots2(mod2) 
 ols_plot_resid_lev(mod2)
 ```
 Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met. An outlier and Leverage Diagnostics graph shows that there are not many outliers to this model.
@@ -368,11 +363,10 @@ Our normal quantile plot of residuals of our model shows that the residuals are 
 ## ANOVA
 ```{r}
 # interaction plots 
-interaction.plot(Walc2, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
 interaction.plot(Walc2, sex, grade, type = 'b', lwd = 3, col = c('red','blue'), main = "Interaction Plot of Walc2 and Sex")
 ```
 **Interaction Plot Discussion**
-An interaction plot of school and Walc does not indicate a strong interaction. An interaction plot of sex and plot does indicate an interaction between these variables on grade.
+An interaction plot of sex and plot indicates an interaction between these variables on grade.
 
 ```{r}
 # ANOVA Model (predicting grade with Walc2 (binary weekend alcohol consumption) and sex
@@ -380,8 +374,8 @@ gradeaov <- aov(grade ~ Walc2 + sex + Walc2*sex)
 summary(gradeaov)
 
 # Regression model with indicators and without intercept.
-gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
-summary(gradelm)
+# gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
+# summary(gradelm)
 
 # Comparing Pairs of Means in Two-Way ANOVA 
 combo <- as.factor(paste(Walc2, sex))
@@ -396,17 +390,18 @@ bartlett.test(grade, combo)
 sds <- tapply(grade, combo, sd)
 print("Ratio of Max/Min Sample SD")
 round(max(sds)/min(sds), 1)
+
 oneway.test(grade ~ combo)
 
 # Tukey comparisons
-plot(TukeyHSD(gradeaov2), las = 1)
+plot(TukeyHSD(gradeaov2), las = 1, cex.axis=.5)
 
 # Residual plots
 myResPlots2(gradeaov)
 ```
 
 **ANOVA Discussion**
-We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. We use Walc2 in the binary because we use it as a categorical variable and because many students selected an option that they consumed no alcohol. Because the ratio of max/min sample SD for our predictors is 1.1, we can reasonably pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors. Our two-way anova model had an adjusted R-squared value of 0.040 which indicates that it accounts for approximately only 4% of the variation in grades and shows that in males, weekend alcohol consumption had a negative effect on grades. This was not true for females who indicated that they drink some alcohol on weekends. Tukey comparisons indicate that there is a true difference in the mean grades between males who drink some and females who drink some, males who drink some and males who drink none, and males who drink some and females who drink none. A normal quantile plot of residuals shows that they are approximately normally distributed because they fall linearly. A fits vs. residuals plot does not indicate heteroskedasticity.
+We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. We use Walc2 in the binary because we use it as a categorical variable and because many students selected an option that they consumed no alcohol. Because the ratio of max/min sample SD for our predictors is 1.1, we can reasonably pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors. Our two-way anova model had an adjusted R-squared value of 0.040 which indicates that it accounts for approximately only 4% of the variation in grades and shows that in males, weekend alcohol consumption had a negative effect on grades. This was not true for females who indicated that they drink some alcohol on weekends. Tukey comparisons indicate that there is a true difference in the mean grades between males who drink some and females who drink some, males who drink some and males who drink none, and males who drink some and females who drink none. A normal quantile plot of residuals shows that they are approximately normally distributed because they fall linearly. A fits vs. residuals plot does not indicate heteroskedasticity. These residual plots show that the assumptions of the model were valid.
 
 ## Conclusion
-jklda
+Our project identified and analyzed predictors of grades earned by students in two secondary schools in Portugal. We found that both weekday and weekend alcohol consumption were both statistically significantly negatively correlated with grades. Permutation tests confirmed theoretical t-test results that found that there was a statistically significant difference in grades between males and females and between the two schools.  
