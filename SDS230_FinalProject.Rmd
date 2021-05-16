@@ -16,8 +16,13 @@ library(PerformanceAnalytics)
 source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 ```
 
+<<<<<<< HEAD
 ## Introduction
 Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression. We perform analysis of variance to identify differences in grades between groups that consume alcohol on weekends.
+=======
+**Introduction**
+*Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression. We perform analysis of variance to identify differences in grades between groups that consume alcohol on weekends.*
+>>>>>>> 60071be0acd812e5f73a0e0a2d5b8f8216f31b45
 
 
 ## Data
@@ -327,7 +332,7 @@ text(actualdiff1 - 0.1, 400 , paste("Actual Diff in Means =", round(actualdiff1,
 
 mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 ```
-*Permutation Test Discussion*
+**Permutation Test Discussion**
 The result of the first permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.
 The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.
 
@@ -362,58 +367,53 @@ The adjusted R-squared value of the model is 0.23, which means our model account
 **Multiple Regression - Residual Plots**
 ```{r}
 myResPlots2(mod2) # normal quantile and residual plot for model
+ols_plot_resid_lev(mod2)
 ```
-Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met.
-
+Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met. An outlier and Leverage Diagnostics graph shows that there are not many outliers to this model.
 
 ## ANOVA
 ```{r}
-# ANOVA
-
-# interaction plot - there does appear to be an interaction bwtee
-#interaction.plot(Walc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
-#interaction.plot(Dalc, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and School")
-#interaction.plot(Walc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and Sex")  ### especially not paralell  here
-#interaction.plot(Dalc, sex, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Dalc and Sex")
+# interaction plots 
+interaction.plot(Walc2, school, grade, type = 'b', lwd = 3, col = c('red','blue','black'), main = "Interaction Plot of Walc and School")
 interaction.plot(Walc2, sex, grade, type = 'b', lwd = 3, col = c('red','blue'), main = "Interaction Plot of Walc2 and Sex")
+```
+**Interaction Plot Discussion**
+An interaction plot of school and Walc does not indicate a strong interaction. An interaction plot of sex and plot does indicate an interaction between these variables on grade.
 
-
+```{r}
 # ANOVA Model (predicting grade with Walc2 (binary weekend alcohol consumption) and sex
 gradeaov <- aov(grade ~ Walc2 + sex + Walc2*sex)
 summary(gradeaov)
 
-# Regression model with indicators and without intercept. do we need this?
-# gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
-# summary(gradelm)
+# Regression model with indicators and without intercept.
+gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
+summary(gradelm)
 
-# Comparing Pairs of Means in Two-Way ANOVA (turn into one-way anova and use Tukey)
+# Comparing Pairs of Means in Two-Way ANOVA 
 combo <- as.factor(paste(Walc2, sex))
 gradeaov2 <- aov(grade ~ combo)
 summary(gradeaov2)
 summary.lm(gradeaov2)
 
-# Tukey comparisons
-par(mar = c(5, 15, 4, 2))
-plot(TukeyHSD(gradeaov2), las = 1)
-
-# Bartlett and Levene Test???
+# Bartlett Test
 bartlett.test(grade, combo)
-leveneTest(grade, combo)
 
-# Residual plots
-myResPlots2(gradeaov)
-
+# Ratio of Max/Min Sample SD
 sds <- tapply(grade, combo, sd)
 print("Ratio of Max/Min Sample SD")
 round(max(sds)/min(sds), 1)
 oneway.test(grade ~ combo)
 
+# Tukey comparisons
+par(mar = c(5, 15, 4, 2))
+plot(TukeyHSD(gradeaov2), las = 1)
+
+# Residual plots
+myResPlots2(gradeaov)
 ```
+
 **ANOVA Discussion**
-We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. Because the ratio of max/min sample SD for our predictors is 1.1, we can pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We can conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically significant interaction between these two factors.
+We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. We use Walc2 in the binary because we use it as a categorical variable and because many students selected an option that they consumed no alcohol. Because the ratio of max/min sample SD for our predictors is 1.1, we can reasonably pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors. Our two-way anova model had an adjusted R-squared value of 0.040 which indicates that it accounts for approximately only 4% of the variation in grades and shows that in males, weekend alcohol consumption had a negative effect on grades. This was not true for females who indicated that they drink some alcohol on weekends. Tukey comparisons indicate that there is a true difference in the mean grades between males who drink some and females who drink some, males who drink some and males who drink none, and males who drink some and females who drink none. A normal quantile plot of residuals shows that they are approximately normally distributed because they fall linearly. A fits vs. residuals plot does not indicate heteroskedasticity.
 
 ## Conclusion
 a short paragraph
-
-##remember to take our names off!!
-
