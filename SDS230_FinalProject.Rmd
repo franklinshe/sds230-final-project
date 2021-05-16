@@ -1,7 +1,5 @@
 ---
 title: "SDS230_FinalProject"
-author: "Tejita Agarwal, Lelan Hu, Franklin She"
-date: "5/5/2021"
 output: word_document
 ---
 
@@ -18,12 +16,12 @@ library(PerformanceAnalytics)
 source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 ```
 
-**Introduction**
+## Introduction
 Our project is an analysis of the factors that may be correlated with the grades earned by students in two secondary schools in Portugal. We explore factors including alcohol consumption on weekends and weekdays, sex, studytime and freetime, etc. Through this analysis we hope to elucidate potential determinants of grades in this population. We use descriptive plots to provide some initial insight into the data, provide information about significant correlations between variables, and perform grade-predicting multiple regression. We perform analysis of variance to identify differences in grades between groups that consume alcohol on weekends.
 
 
-**Data**
-*The data used in this analysis were collected in a survey of students in two secondary schools. It includes information about gender, social habits, alcohol consumption, grades, etc.
+## Data
+The data used in this analysis were collected in a survey of students in two secondary schools. It includes information about gender, social habits, alcohol consumption, grades, etc.
 
 The variables used in this analysis are:
 1. school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira); categorical
@@ -41,9 +39,8 @@ The variables used in this analysis are:
 
 \*(discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 
-*
-**Data Cleaning Process**
-**Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and we removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. Later, for some analyses we recode Dalc and Walc to be binary because many students selected the lowest option on the scale.** 
+## Data Cleaning Process
+Our data did not require much cleaning. We renamed the column G3 to "grade" to provide a more intuitive and clear description of what the variable was and we removed observations where grade was 0 because this unreasonable grade indicated that the data for these observations was incomplete. Later, for some analyses we recode Dalc and Walc to be binary because many students selected the lowest option on the scale.
 
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
@@ -65,8 +62,7 @@ str(selected_data)
 attach(selected_data)
 ```
 
-
-**Descriptive Plots**
+## Descriptive Plots
 ```{r}
 # Graphics - Boxplot (grade by school and by sex with superimposed mean)
 boxplot(grade ~ school, main = "Boxplot of Grades by School", ylab = "Grade / Scale(0 - 20)", col = "lightblue", xlab = "School")
@@ -107,13 +103,13 @@ chart.Correlation(transdata[, c(1:4,7,9:12)], histogram = TRUE, pch = 19)
 
 ```
 
-**Summary Information**
-*Our preliminary descriptive plots show that grades, freetime, and time going out appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity between these variables may need to be considered in our models. Interestingly, there does not appear to be a significant correlation between age and grades or studytime or freetime.*
+### Summary Information
+Our preliminary descriptive plots show that grades, freetime, and time going out appear to be approximately normally distributed. The box plots indicate there may be significant difference in the mean of grades between the two schools and between females and males. Our initial matrix plot indicates that transformations of the variables absences, Dalc, and Walc may be helpful. These three variables all appear strongly right skewed. This was expected for Walc and Dalc, which measure alcohol consumption, because many students reported that they do not consume any alcohol. As expected, there is a strong correlation between Walc and Dalc on both the raw and log scale and this indicates that collinearity between these variables may need to be considered in our models. Interestingly, there does not appear to be a significant correlation between age and grades or studytime or freetime.
 
-**Analysis**
+## Analysis
+
+### Basic Tests - T-test
 ```{r}
-# Basic Tests - T-test
-
 t.test(Walc ~ sex)
 t.test(log10(Walc) ~ sex) 
 t.test(Dalc ~ sex) 
@@ -126,11 +122,11 @@ t.test(log10(Walc) ~ school)
 t.test(Dalc ~ school) 
 t.test(log10(Dalc) ~ school) 
 ```
-*Discussion of t-test results:*
-**The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.**
+**Discussion of t-test results**
+The results of a two-sample t-test showed that there was enough evidence to reject the null hypothesis that the difference in means of weekend and weekday alcohol consumption for Females and Males was equal to zero. This was also true on the log scale. Additionally, a t-test showed significant difference in study time and grades for females and males, and showed significant differences in grades between schools. There was not enough evidence to reject the null hypothesis that the difference in mean weekday alcohol consumption between schools was equal to zero. This was true on the log scale and for weekend alcohol consumption as well.
 
+### Basic Tests - Correlation
 ```{r}
-# Basic Tests - Correlation
 ##correlations are already provided in the matrix plot above, should we do this again? 
 #### perhaps we should do some, so we can provide some discussion of the results and talk about the statistical significance 
 
@@ -141,12 +137,12 @@ cor.test(Walc, grade)
 cor.test(freetime, goout)
 cor.test(goout, Walc)
 ```
-*Discussion of correlation results:*
-**(See Matrix Plot for more correlations.) We found statistically significant positive correlations between Dalc and Walc (p-value < 2.2e-16), freetime and goout ( p-value < 2.2e-16), and goout and Walc (p-value < 2.2e-16). For these, we reject the null hypothesis that the true correlation is equal to 0. The correlation between age and grade was not statistically significant (p-value = 0.3393, above alpha 0.05), and we do not reject the null hypothesis that the correlation is equal to zero. We found statistically significant negative correlations between Dalc and grade (p-value = 8.19e-08) and Walc and grade (p-value = 2.743e-06). For these, we reject the null hypothesis that the truee correlation is equal to 0.**
+*Discussion of correlation results*
+(See Matrix Plot for more correlations.) We found statistically significant positive correlations between Dalc and Walc (p-value < 2.2e-16), freetime and goout ( p-value < 2.2e-16), and goout and Walc (p-value < 2.2e-16). For these, we reject the null hypothesis that the true correlation is equal to 0. The correlation between age and grade was not statistically significant (p-value = 0.3393, above alpha 0.05), and we do not reject the null hypothesis that the correlation is equal to zero. We found statistically significant negative correlations between Dalc and grade (p-value = 8.19e-08) and Walc and grade (p-value = 2.743e-06). For these, we reject the null hypothesis that the truee correlation is equal to 0.
+
+### Basic Tests - Bootstrap
 
 ```{r}
-# Basic Tests - Bootstrap
-
 #Recoding Dalc to a binary, for later use 
 Dalc2 <- ifelse(Dalc == 1, "None", "Some")
 
@@ -195,7 +191,6 @@ legend("topright", c("Original CI","Boot CI"), lwd = 3, col = c("green","red"), 
 
 #Normal quantile plot of the bootstrapped differences in means
 qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differences in Means \n of Grades based on Weekday Alcohol Consumption")
-
 ```
 
 
@@ -284,18 +279,19 @@ qqPlot(bResults, main = "NQ Plot of Bootstrapped Regression Slopes")
 #reminder of regression results
 summary(lm1)
 ```
-*Bootstrap Discussion*
-**The t-test for the relationship between weekday alcohol consumption and a student's grades says that there is a significant difference in students' grades depending on whether they drank some or none on weekdays. The p value is extremely low in the t-test. This concurs with the bootstrap's results, which have 95% confidence intervals that almost directly overlap with the theoretical intervals. All parts of the 95% CI for differences in mean are also above 0, which show that we have 95% confidence that there is a significant positive difference between those who drink some and none based on the bootstrap. 
+**Bootstrap Discussion**
+The t-test for the relationship between weekday alcohol consumption and a student's grades says that there is a significant difference in students' grades depending on whether they drank some or none on weekdays. The p value is extremely low in the t-test. This concurs with the bootstrap's results, which have 95% confidence intervals that almost directly overlap with the theoretical intervals. All parts of the 95% CI for differences in mean are also above 0, which show that we have 95% confidence that there is a significant positive difference between those who drink some and none based on the bootstrap. 
 
 All of the above applies for the relationship between weekend alcohol consumption and a student's grades.
 
 The only difference between the two is that the range of means within the 95% confidence interval is between 0.66 and 1.56 for weekday alcohol consumption, and it is between 0.18 and 1.04 for weekend alcohol consumption. This means that on average there is a greater difference in grades between students who drink some on the weekday than on the weekends as compared to those who do not. 
 
-For the third bootstrap between weekday alcohol consumption and age, there is a significant difference as well with a low p value from the linear regression. The CI for correlation values is 0.0466 and 0.228, and the CI for slopes is 0.0347 and 0.174. The theoretical CI are narrower than the bootstrapped CI for both correlations and slopes, so the real CI may be slightly larger than what the linear models suggest. Nevertheless, the CIs do not include 0, so the bootstrapped values still show that there is a significant difference.**
+For the third bootstrap between weekday alcohol consumption and age, there is a significant difference as well with a low p value from the linear regression. The CI for correlation values is 0.0466 and 0.228, and the CI for slopes is 0.0347 and 0.174. The theoretical CI are narrower than the bootstrapped CI for both correlations and slopes, so the real CI may be slightly larger than what the linear models suggest. Nevertheless, the CIs do not include 0, so the bootstrapped values still show that there is a significant difference.
+
+### Basic Tests - Permutation Tests
 
 ```{r}
-# Basic Tests - Permutation Test (grade by school)
-
+# Permutation test 1 (grade by school)
 (actualdiff <- by(grade, school, mean))
 (actualdiff <- actualdiff[1] - actualdiff[2])
 set.seed(1)
@@ -332,11 +328,13 @@ text(actualdiff1 - 0.1, 400 , paste("Actual Diff in Means =", round(actualdiff1,
 mean(abs(diffvals1) >= abs(actualdiff1)) ## p-value is approximately 0.0012
 ```
 *Permutation Test Discussion*
-**The result of the first permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.**
-**The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.**
+The result of the first permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between the schools is zero. The permuted p-value was approximately 0, which is similar to the theoretical p-value calculated earlier to be 6.261e-08. These p-values are below alpha 0.05 and therefore we reject the null.
+The result of the second permutation test was that there is enough evidence to reject the null hypothesis that the difference in means of grades between males and females is zero. The permuted p-value was 0.0012, which is similar to the theoretical p-value calculated earlier to be 0.0009001. These p-values are below alpha 0.05 and therefore we reject the null.
 
-*Multiple Regression - Description of Plan*
-**We perform backwards step-wise multiple regression predicting grade. Our plan is to include all variables in our initial model (school, sex, age, studytime, higher education, freetime, goout, Dalc, Walc, health, absences, grade), then remove non-significant predictors in order of least significance to most significance, leaving only significant predictors. We transform Walc, Dalc, and absences as indicated and discussed in our matrix plot above. We begin with step-wise removal of interaction terms, then of the remaining predictors. Because we have categorical predictors, we use backwards stepwise regression instead of best subsets regression.**
+## Multiple Regression
+
+**Description of Plan**
+We perform backwards step-wise multiple regression predicting grade. Our plan is to include all variables in our initial model (school, sex, age, studytime, higher education, freetime, goout, Dalc, Walc, health, absences, grade), then remove non-significant predictors in order of least significance to most significance, leaving only significant predictors. We transform Walc, Dalc, and absences as indicated and discussed in our matrix plot above. We begin with step-wise removal of interaction terms, then of the remaining predictors. Because we have categorical predictors, we use backwards stepwise regression instead of best subsets regression.
 
 ```{r}
 # Multiple Regression to predict grade (Backwards Stepwise Regression)
@@ -355,23 +353,20 @@ mod2 <- lm(grade ~ logWalc + logDalc + school + sex + age + studytime + higher +
 mod2 <- lm(grade ~ logDalc +  + school + age + studytime + higher + health + sqrtabs)
 ```
 
-*Multiple Regression - Results and Discussion*
-
-```{r}
+**Multiple Regression - Results and Discussion**
+``` {r}
 summary(mod2)
 ```
+The adjusted R-squared value of the model is 0.23, which means our model accounts for 23% of the variation in our response variable, grade. Our model shows that plans to attend higher education and studytime were major significant positive predictors of grades. We also found that logDalc was a major significant negative predictor of grades. The p-value of the model was < 2.2e-16, which is below alpha 0.05, therefore our model is statistically significant. The criteria used to choose our final model was that each predictor was a statistically significant predictor of our response variable grade.
 
-*Discussion*
-**The adjusted R-squared value of the model is 0.23, which means our model accounts for 23% of the variation in our response variable, grade. Our model shows that plans to attend higher education and studytime were major significant positive predictors of grades. We also found that logDalc was a major significant negative predictor of grades. The p-value of the model was < 2.2e-16, which is below alpha 0.05, therefore our model is statistically significant. The criteria used to choose our final model was that each predictor was a statistically significant predictor of our response variable grade.**
-
-*Multiple Regression - Residual Plots*
-
+**Multiple Regression - Residual Plots**
 ```{r}
 myResPlots2(mod2) # normal quantile and residual plot for model
 ```
-*Residual Plots Discussion*
-** Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met.**
+Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met.
 
+
+## ANOVA
 ```{r}
 # ANOVA
 
@@ -414,12 +409,11 @@ round(max(sds)/min(sds), 1)
 oneway.test(grade ~ combo)
 
 ```
-*ANOVA Discussion*
-**We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. Because the ratio of max/min sample SD for our predictors is 1.1, we can pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We can conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors.**
+**ANOVA Discussion**
+We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. Because the ratio of max/min sample SD for our predictors is 1.1, we can pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We can conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically significant interaction between these two factors.
 
-should have model, interaction plot if two way, discussion of results, Tukey comparisons, residual plots. 
-
-**Conclusions**
+## Conclusion
 a short paragraph
+
 ##remember to take our names off!!
 
