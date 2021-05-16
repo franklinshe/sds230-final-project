@@ -7,7 +7,7 @@ output: word_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include = FALSE} 
 # Packages
 library(plyr)
 library(car)
@@ -399,7 +399,6 @@ round(max(sds)/min(sds), 1)
 oneway.test(grade ~ combo)
 
 # Tukey comparisons
-par(mar = c(5, 15, 4, 2))
 plot(TukeyHSD(gradeaov2), las = 1)
 
 # Residual plots
@@ -410,4 +409,4 @@ myResPlots2(gradeaov)
 We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. We use Walc2 in the binary because we use it as a categorical variable and because many students selected an option that they consumed no alcohol. Because the ratio of max/min sample SD for our predictors is 1.1, we can reasonably pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors. Our two-way anova model had an adjusted R-squared value of 0.040 which indicates that it accounts for approximately only 4% of the variation in grades and shows that in males, weekend alcohol consumption had a negative effect on grades. This was not true for females who indicated that they drink some alcohol on weekends. Tukey comparisons indicate that there is a true difference in the mean grades between males who drink some and females who drink some, males who drink some and males who drink none, and males who drink some and females who drink none. A normal quantile plot of residuals shows that they are approximately normally distributed because they fall linearly. A fits vs. residuals plot does not indicate heteroskedasticity.
 
 ## Conclusion
-a short paragraph
+jklda
