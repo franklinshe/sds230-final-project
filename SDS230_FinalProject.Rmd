@@ -5,9 +5,10 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=6, fig.height=4) 
 ```
 
-```{r}
+```{r, include=FALSE}
 # Packages
 library(plyr)
 library(car)
@@ -98,7 +99,7 @@ t.test(Walc ~ sex)
 t.test(grade ~ sex)
 ```
 
-```{r, EVAL = F}
+```{r, eval=FALSE}
 t.test(grade ~ school) 
 t.test(Walc ~ school) 
 t.test(studytime ~ sex) 
@@ -118,7 +119,7 @@ The results of a two-sample t-test showed that there was enough evidence to reje
 cor.test(Walc, grade)
 ```
 
-```{r, EVAL = F}
+```{r, eval=FALSE}
 cor.test(Dalc, grade)
 cor.test(Dalc, Walc)
 cor.test(age, grade)
@@ -131,8 +132,9 @@ cor.test(goout, Walc)
 ### Basic Tests - Bootstrap
 
 ```{r}
-#Recoding Dalc to a binary, for later use 
+#Recoding Dalc and Walc to a binary, for later use 
 Dalc2 <- ifelse(Dalc == 1, "None", "Some")
+Walc2 <- ifelse(Walc == 1, "None", "Some")
 
 t.test(grade ~ Dalc2)
 
@@ -166,9 +168,8 @@ qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differe
 ```
 
 
-```{r, EVAL = F}
+```{r, eval=FALSE}
 #Bootstrap 2 of grades and Walc (Weekend Alcohol Consumption)
-Walc2 <- ifelse(Walc == 1, "None", "Some")
 t.test(grade ~ Walc2)
 boxplot(grade ~ Walc2, main = "Boxplot of Grades by Weekend Alcohol Consumption", cex.main = 0.7, col = c(2:4), lwd = 2)
 N <- 10000
@@ -296,7 +297,7 @@ The adjusted R-squared value of the model is 0.23, which means our model account
 **Multiple Regression - Residual Plots**
 ```{r}
 myResPlots2(mod2) 
-## ols_plot_resid_lev(mod2)
+ols_plot_resid_lev(mod2)
 ```
 Our normal quantile plot of residuals of our model shows that the residuals are approximately normally distributed. The plot of fits vs. residuals does not show heteroskedasticity or signs of collinearity. This indicates that the assumptions of our multiple regression model are sufficiently met. An outlier and Leverage Diagnostics graph shows that there are not many outliers to this model.
 
@@ -330,8 +331,7 @@ round(max(sds)/min(sds), 1)
 oneway.test(grade ~ combo)
 
 # Tukey comparisons
-par(mar = c(5, 15, 4, 2))
-plot(TukeyHSD(gradeaov2), las = 1)
+plot(TukeyHSD(gradeaov2), las = 1, cex.axis=.5)
 
 # Residual plots
 myResPlots2(gradeaov)
