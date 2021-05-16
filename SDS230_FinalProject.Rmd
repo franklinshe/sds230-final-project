@@ -35,7 +35,6 @@ The variables used in this analysis are:
 10. health - current health status (numeric: from 1 - very bad to 5 - very good); continuous\*
 11. absences - number of school absences (numeric: from 0 to 93); continuous\*
 12. grade - final grade (numeric: from 0 to 20); continuous\*
-
 \*(discrete integers, makes sense to be treated as continuous variable, because of the nature of the variable)
 
 ## Data Cleaning Process
@@ -44,22 +43,15 @@ Our data did not require much cleaning. We renamed the column G3 to "grade" to p
 ```{r}
 all_data <- read.csv("student-por.csv", header=TRUE)
 selected_data <- all_data[, c("school", "sex", "age", "studytime", "higher", "freetime", "goout", "Dalc", "Walc", "health", "absences", "G3")]
-
-# Data Cleaning
-
 # rename G3 to grade
 selected_data <- rename(selected_data, c("G3"="grade"))
-
 # remove observations where grade is 0
 selected_data <- selected_data[selected_data$grade != 0,]
-
 nrow(selected_data)
 names(selected_data)
 str(selected_data)
-
 attach(selected_data)
 ```
-
 
 ## Descriptive Plots
 ```{r}
@@ -74,7 +66,6 @@ means <- tapply(grade, sex, mean)
 points(means, col = "red", pch = 19, cex = 1.2)
 text(x = c(1:6), y = means + 1, labels = round(means,1))
 
-# Graphics - Scatterplot (grade and weekend and weekday alcohol consumption)
 plot(jitter(Walc, factor = 1), jitter(grade), pch = 19, col = "red", xlab = "Weekend Alcohol Consumption",
      ylab = "Grade", cex = 0.5)
 mtext("Grade vs. Weekend Alcohol Consumption", cex = 1.2, line = 1)
@@ -84,10 +75,7 @@ plot(jitter(Dalc, factor = 1), jitter(grade), pch = 19, col = "blue", xlab = "We
      ylab = "Grade", cex = 0.5)
 mtext("Grade vs. Weekday Alcohol Consumption", cex = 1.2, line = 1)
 mtext(paste("Sample Correlation =", round(cor(grade, Dalc), 3)), cex = 1.2, line = 0)
-
-# Graphics - Histogram 
 hist(grade, main = "Histogram of Grades", xlab = "Grade (0 - 20)", xlim = c(0, 20), col = "orange")
-
 
 chart.Correlation(selected_data[, c(3,4,6:12)], histogram = TRUE, pch = 19)
 ##might be useful to transform Walc, Dalc, and absences. for now, I will try a sqrt transformation of abs, and log transformation of Walc and Dalc. 
@@ -146,50 +134,34 @@ cor.test(goout, Walc)
 #Recoding Dalc to a binary, for later use 
 Dalc2 <- ifelse(Dalc == 1, "None", "Some")
 
-#t test for the binary version of Dalc 
 t.test(grade ~ Dalc2)
 
-#Make normal quantile plot of grades
-library(car)
 qqPlot(grade, col = 2, pch = 18, main = "Normal Quantile Plot of Grades")
 
-#Boxplot of grades by Dalc2
 boxplot(grade ~ Dalc2, main = "Boxplot of Grades by Weekday Alcohol Consumption", cex.main = 0.7, col = c(2:4), lwd = 2)
 
-#Count number of non-missing values in each level of weekday alcohol consumption
 sum(Dalc2 == "None")
 sum(Dalc2 == "Some")
 
-#Set number of bootstrap samples to take
 N <- 10000
-
-#Make empty vector for sample mean differences
 diffGrade <- rep(NA, N)
-
 for (i in 1:N) {
   sN <- sample(grade[Dalc2 =="None"], sum(Dalc2 == "None"), replace = TRUE)
   sS <- sample(grade[Dalc2 =="Some"], sum(Dalc2 == "Some"), replace = TRUE)
   diffGrade[i] <- mean(sN) - mean(sS)
 }
 
-#Get bootstrap quantiles
 ci <- quantile(diffGrade, c(0.025, 0.975))
-
-#Report these values
 round(ci,1)
-#compare to original 95% CI for the mean
 Gradet_test <- t.test(grade ~ Dalc2)$conf.int
 round(Gradet_test,2)
 
-#Make histogram of bootstrap sample means
 hist(diffGrade, col = "blue", main = "Bootstrapped Sample Means Diff in Grades against Weekday Alcohol Consumption", cex.main = 0.7, xlab = "Grades", breaks = 50)
 
-#Add lines to histogram for CI's
 abline(v = ci, lwd = 3, col = "red")
 abline(v = Gradet_test, lwd = 3, col = "green", lty = 2)
 legend("topright", c("Original CI","Boot CI"), lwd = 3, col = c("green","red"), lty = c(2,1))
 
-#Normal quantile plot of the bootstrapped differences in means
 qqPlot(diffGrade, pch = 19, col = 'red', main = "NQ Plot of Bootstrapped Differences in Means \n of Grades based on Weekday Alcohol Consumption")
 ```
 
@@ -372,10 +344,6 @@ An interaction plot of sex and plot indicates an interaction between these varia
 gradeaov <- aov(grade ~ Walc2 + sex + Walc2*sex)
 summary(gradeaov)
 
-# Regression model with indicators and without intercept.
-# gradelm <- lm(grade ~ Walc2 + sex + Walc2*sex -1)
-# summary(gradelm)
-
 # Comparing Pairs of Means in Two-Way ANOVA 
 combo <- as.factor(paste(Walc2, sex))
 gradeaov2 <- aov(grade ~ combo)
@@ -404,7 +372,7 @@ myResPlots2(gradeaov)
 We model grade with predictors Walc2 (binary weekend alcohol consumption) and sex with a two-way ANOVA model. We use Walc2 in the binary because we use it as a categorical variable and because many students selected an option that they consumed no alcohol. Because the ratio of max/min sample SD for our predictors is 1.1, we can reasonably pass the assumption of normal distributed and constant variance across groups. In the model summary, we can see that all predictors (Walc2, sex, and the interaction between the two) are significant. We conclude that there are differences in grade due to none or some alcohol consumption and male or female sex and there is a statistically signifcant interaction between these two factors. Our two-way anova model had an adjusted R-squared value of 0.040 which indicates that it accounts for approximately only 4% of the variation in grades and shows that in males, weekend alcohol consumption had a negative effect on grades. This was not true for females who indicated that they drink some alcohol on weekends. Tukey comparisons indicate that there is a true difference in the mean grades between males who drink some and females who drink some, males who drink some and males who drink none, and males who drink some and females who drink none. A normal quantile plot of residuals shows that they are approximately normally distributed because they fall linearly. A fits vs. residuals plot does not indicate heteroskedasticity. These residual plots show that the assumptions of the model were valid.
 
 ## Conclusion
-Our project identified and analyzed predictors of grades earned by students in two secondary schools in Portugal. We found that both weekday and weekend alcohol consumption were both statistically significantly negatively correlated with grades. Permutation tests confirmed theoretical t-test results that found that there was a statistically significant difference in grades between males and females and between the two schools.  
-
+Our project identified and analyzed predictors of grades earned by students in two secondary schools in Portugal. We found that both weekday and weekend alcohol consumption were both statistically significantly negatively correlated with grades. Permutation tests confirmed theoretical t-test results that found that there was a statistically significant difference in grades between males and females and between the two schools.
+The bootstrap for grades and Dalc was consistent with the t-test which showed significant difference in mean grade between groups who consumed none and some alcohol on weekdays, and the bootstrap for Dalc and age indicated that they are highly correlated, affirming theoretical correlations done above. For the second bootstrap, the bootstrapped CIs are wider than the theoretical CIs. Our multiple regression model is statistically significant and accounts for 23% of the variation in the response variable, grade. Plans to attend higher education was the biggest significant positive predictors of grades. Log of weekday consumption was a major significant negative predictor of grades. Our two-way anova model accounts for approximately only 4% of the variation in grades and our interaction term shows that in males, weekend alcohol consumption had a negative effect on grades.
 
 
